@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Football Academy - Training & Tactics Simulator</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          <path d="M2 12h20" />
+        </svg>
+        <span class="logo-text">APEX <span class="accent-text">FOOTBALL</span> ACADEMY</span>
+      </div>
+
+      <div class="header-stats">
+        <div class="header-stat-card" id="stat-turn">
+          <span class="stat-label">TURN</span>
+          <span class="stat-value">1 <span class="stat-sub">/ 30</span></span>
+        </div>
+        <div class="header-stat-card" id="stat-match-countdown">
+          <span class="stat-label">NEXT MATCH</span>
+          <span class="stat-value">10 <span class="stat-sub">turns</span></span>
+        </div>
+        <div class="header-stat-card" id="stat-money">
+          <span class="stat-label">BUDGET</span>
+          <span class="stat-value text-green">$0</span>
+        </div>
+        <div class="header-stat-card" id="stat-fatigue">
+          <span class="stat-label">TEAM FATIGUE</span>
+          <div class="fatigue-bar-wrapper">
+            <div class="fatigue-bar-fill" style="width: 0%"></div>
+          </div>
+          <span class="stat-value-mini">0%</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-body">
+      <!-- Sidebar / Navigation -->
+      <aside class="app-sidebar">
+        <nav class="nav-menu">
+          <button class="nav-btn active" data-tab="training">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            Training Hub
+          </button>
+          <button class="nav-btn" data-tab="squad">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Squad & Lineup
+          </button>
+          <button class="nav-btn" data-tab="shop">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            Finances & Upgrades
+            <span class="shop-badge hidden">!</span>
+          </button>
+          <button class="nav-btn" data-tab="match-centre">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2" ry="2" />
+              <path d="M12 2v20" />
+              <path d="M2 12h20" />
+              <circle cx="12" cy="12" r="4" />
+            </svg>
+            Match Centre
+            <span class="match-badge pulse hidden">Ready</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="season-progress">
+            <span class="progress-title">Tournament Progress</span>
+            <div class="progress-dots">
+              <div class="dot current" id="dot-match-1">M1</div>
+              <div class="dot" id="dot-match-2">M2</div>
+              <div class="dot" id="dot-match-3">M3</div>
+            </div>
+            <span class="progress-desc">Win all 3 matches to become Champions!</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Dashboards View -->
+      <section class="app-content">
+        
+        <!-- TRAINING TAB -->
+        <div class="tab-panel active" id="panel-training">
+          <div class="panel-header">
+            <div>
+              <h1 class="panel-title">Training Academy</h1>
+              <p class="panel-subtitle">Develop your squad's stats. Each turn you train, stats increase and team fatigue rises.</p>
+            </div>
+            <div class="actions-group">
+              <button class="btn btn-secondary rest-btn" onclick="handleRest()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                Rest Team (-45 Fatigue, Skip Turn)
+              </button>
+            </div>
+          </div>
+
+          <div class="training-grid-layout">
+            <!-- Training Cards -->
+            <div class="drills-column">
+              <h2 class="section-title">Available Drills</h2>
+              <div class="drills-list">
+                <!-- Speed Card -->
+                <div class="drill-card" id="drill-speed">
+                  <div class="drill-info">
+                    <span class="drill-badge">SPEED</span>
+                    <h3 class="drill-name">Agility & Acceleration</h3>
+                    <p class="drill-desc">Running speed and rapid acceleration. Boosts stamina (+0.5), power (+0.25), and tactics (+0.25).</p>
+                    <div class="drill-effects">
+                      <span class="effect-stat text-green">+2.0 Speed</span>
+                      <span class="effect-stat text-green">+0.5 Stamina</span>
+                      <span class="effect-stat text-green">+0.25 Power</span>
+                      <span class="effect-stat text-green">+0.25 Tactic</span>
+                      <span class="effect-fatigue text-red">+16 Fatigue</span>
+                    </div>
+                  </div>
+                  <div class="drill-action">
+                    <span class="drill-level">Lvl 1</span>
+                    <button class="btn btn-primary train-btn" onclick="handleTrain('speed')">Train</button>
+                  </div>
+                </div>
+
+                <!-- Stamina Card -->
+                <div class="drill-card" id="drill-stamina">
+                  <div class="drill-info">
+                    <span class="drill-badge">STAMINA</span>
+                    <h3 class="drill-name">Endurance Circuit</h3>
+                    <p class="drill-desc">Aerobic capacity. Minimizes match fatigue rate. Boosts power (+0.75).</p>
+                    <div class="drill-effects">
+                      <span class="effect-stat text-green">+2.0 Stamina</span>
+                      <span class="effect-stat text-green">+0.75 Power</span>
+                      <span class="effect-fatigue text-red">+20 Fatigue</span>
+                    </div>
+                  </div>
+                  <div class="drill-action">
+                    <span class="drill-level">Lvl 1</span>
+                    <button class="btn btn-primary train-btn" onclick="handleTrain('stamina')">Train</button>
+                  </div>
+                </div>
+
+                <!-- Power Card -->
+                <div class="drill-card" id="drill-power">
+                  <div class="drill-info">
+                    <span class="drill-badge">POWER</span>
+                    <h3 class="drill-name">Weight Training</h3>
+                    <p class="drill-desc">Strength and shot power. Improves tackle success rate. Boosts stamina (+0.75).</p>
+                    <div class="drill-effects">
+                      <span class="effect-stat text-green">+2.0 Power</span>
+                      <span class="effect-stat text-green">+0.75 Stamina</span>
+                      <span class="effect-fatigue text-red">+22 Fatigue</span>
+                    </div>
+                  </div>
+                  <div class="drill-action">
+                    <span class="drill-level">Lvl 1</span>
+                    <button class="btn btn-primary train-btn" onclick="handleTrain('power')">Train</button>
+                  </div>
+                </div>
+
+                <!-- Unity Card -->
+                <div class="drill-card" id="drill-unity">
+                  <div class="drill-info">
+                    <span class="drill-badge">UNITY</span>
+                    <h3 class="drill-name">Team Building Scrimmage</h3>
+                    <p class="drill-desc">Tactical cohesion and passing accuracy. Boosts stamina (+0.125) and power (+0.125).</p>
+                    <div class="drill-effects">
+                      <span class="effect-stat text-green">+2.0 Unity</span>
+                      <span class="effect-stat text-green">+0.125 Stamina</span>
+                      <span class="effect-stat text-green">+0.125 Power</span>
+                      <span class="effect-fatigue text-red">+12 Fatigue</span>
+                    </div>
+                  </div>
+                  <div class="drill-action">
+                    <span class="drill-level">Lvl 1</span>
+                    <button class="btn btn-primary train-btn" onclick="handleTrain('unity')">Train</button>
+                  </div>
+                </div>
+
+                <!-- Tactic Card -->
+                <div class="drill-card" id="drill-tactic">
+                  <div class="drill-info">
+                    <span class="drill-badge">TACTICS</span>
+                    <h3 class="drill-name">Chalkboard Strategy</h3>
+                    <p class="drill-desc">Set pieces and positional awareness. Improves shot precision, reduces injury rates and penalty.</p>
+                    <div class="drill-effects">
+                      <span class="effect-stat text-green">+2.0 Tactic</span>
+                      <span class="effect-fatigue text-red">+6 Fatigue</span>
+                    </div>
+                  </div>
+                  <div class="drill-action">
+                    <span class="drill-level">Lvl 1</span>
+                    <button class="btn btn-primary train-btn" onclick="handleTrain('tactic')">Train</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats & Position Rating Previews -->
+            <div class="stats-column">
+              <h2 class="section-title">Academy Stats</h2>
+              <div class="stats-card glass-panel">
+                <div class="stat-progress-item">
+                  <div class="stat-progress-header">
+                    <span class="stat-progress-name">Speed</span>
+                    <span class="stat-progress-val" id="val-speed">10</span>
+                  </div>
+                  <div class="progress-bar-glow">
+                    <div class="progress-bar-fill-glow speed" style="width: 10%"></div>
+                  </div>
+                </div>
+
+                <div class="stat-progress-item">
+                  <div class="stat-progress-header">
+                    <span class="stat-progress-name">Stamina</span>
+                    <span class="stat-progress-val" id="val-stamina">10</span>
+                  </div>
+                  <div class="progress-bar-glow">
+                    <div class="progress-bar-fill-glow stamina" style="width: 10%"></div>
+                  </div>
+                </div>
+
+                <div class="stat-progress-item">
+                  <div class="stat-progress-header">
+                    <span class="stat-progress-name">Power</span>
+                    <span class="stat-progress-val" id="val-power">10</span>
+                  </div>
+                  <div class="progress-bar-glow">
+                    <div class="progress-bar-fill-glow power" style="width: 10%"></div>
+                  </div>
+                </div>
+
+                <div class="stat-progress-item">
+                  <div class="stat-progress-header">
+                    <span class="stat-progress-name">Unity</span>
+                    <span class="stat-progress-val" id="val-unity">10</span>
+                  </div>
+                  <div class="progress-bar-glow">
+                    <div class="progress-bar-fill-glow unity" style="width: 10%"></div>
+                  </div>
+                </div>
+
+                <div class="stat-progress-item">
+                  <div class="stat-progress-header">
+                    <span class="stat-progress-name">Tactics</span>
+                    <span class="stat-progress-val" id="val-tactic">10</span>
+                  </div>
+                  <div class="progress-bar-glow">
+                    <div class="progress-bar-fill-glow tactic" style="width: 10%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <h2 class="section-title mt-4">Position Ratings</h2>
+              <div class="ratings-card glass-panel grid-2">
+                <div class="rating-box">
+                  <span class="rating-label">GK (Goalkeeper)</span>
+                  <span class="rating-value" id="rate-gk">10.0</span>
+                  <span class="rating-desc">Tactic &ge; Speed &gt; Power</span>
+                </div>
+                <div class="rating-box">
+                  <span class="rating-label">Back (Defenders)</span>
+                  <span class="rating-value" id="rate-back">10.0</span>
+                  <span class="rating-desc">Unity = Tactic &gt; Power = Speed</span>
+                </div>
+                <div class="rating-box">
+                  <span class="rating-label">Mid (Midfielders)</span>
+                  <span class="rating-value" id="rate-mid">10.0</span>
+                  <span class="rating-desc">Unity = Tactic</span>
+                </div>
+                <div class="rating-box">
+                  <span class="rating-label">Front (Forwards)</span>
+                  <span class="rating-value" id="rate-front">10.0</span>
+                  <span class="rating-desc">Power = Tactic &gt; Speed = Stamina</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SQUAD TAB -->
+        <div class="tab-panel" id="panel-squad">
+          <div class="panel-header">
+            <div>
+              <h1 class="panel-title">Squad & Lineup</h1>
+              <p class="panel-subtitle">Manage your players, rename them, and monitor their individual stamina and injuries.</p>
+            </div>
+          </div>
+
+          <div class="squad-layout">
+            <!-- 2D Tactical Field Lineup Preview -->
+            <div class="squad-field-container glass-panel">
+              <h2 class="field-title">Visual Lineup (4-4-2)</h2>
+              <div class="pitch-tactical">
+                <div class="pitch-lines">
+                  <div class="midfield-circle"></div>
+                  <div class="midfield-line"></div>
+                  <div class="penalty-box home"></div>
+                  <div class="penalty-box away"></div>
+                </div>
+
+                <!-- Squad Nodes -->
+                <div class="squad-players-overlay">
+                  <!-- GK -->
+                  <div class="field-player GK" data-pid="0">
+                    <div class="player-dot">GK</div>
+                    <span class="player-name-label">GK</span>
+                  </div>
+                  <!-- BACKS -->
+                  <div class="field-player LB" data-pid="1">
+                    <div class="player-dot">DF</div>
+                    <span class="player-name-label">Back 1</span>
+                  </div>
+                  <div class="field-player LCB" data-pid="2">
+                    <div class="player-dot">DF</div>
+                    <span class="player-name-label">Back 2</span>
+                  </div>
+                  <div class="field-player RCB" data-pid="3">
+                    <div class="player-dot">DF</div>
+                    <span class="player-name-label">Back 3</span>
+                  </div>
+                  <div class="field-player RB" data-pid="4">
+                    <div class="player-dot">DF</div>
+                    <span class="player-name-label">Back 4</span>
+                  </div>
+                  <!-- MIDS -->
+                  <div class="field-player LM" data-pid="5">
+                    <div class="player-dot">MF</div>
+                    <span class="player-name-label">Mid 1</span>
+                  </div>
+                  <div class="field-player LCM" data-pid="6">
+                    <div class="player-dot">MF</div>
+                    <span class="player-name-label">Mid 2</span>
+                  </div>
+                  <div class="field-player RCM" data-pid="7">
+                    <div class="player-dot">MF</div>
+                    <span class="player-name-label">Mid 3</span>
+                  </div>
+                  <div class="field-player RM" data-pid="8">
+                    <div class="player-dot">MF</div>
+                    <span class="player-name-label">Mid 4</span>
+                  </div>
+                  <!-- FRONTS -->
+                  <div class="field-player LF" data-pid="9">
+                    <div class="player-dot">FW</div>
+                    <span class="player-name-label">Front 1</span>
+                  </div>
+                  <div class="field-player RF" data-pid="10">
+                    <div class="player-dot">FW</div>
+                    <span class="player-name-label">Front 2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Player List & Details Editor -->
+            <div class="squad-sidebar">
+              <h2 class="section-title">Player Details</h2>
+              <div class="player-editor-card glass-panel" id="player-details-panel">
+                <p class="select-hint text-center py-4">Click a player on the pitch or list to edit and view details.</p>
+                <div class="editor-form hidden" id="editor-form">
+                  <div class="form-group">
+                    <label>Player Name</label>
+                    <input type="text" id="edit-player-name" class="input-dark">
+                  </div>
+                  <div class="form-group-row">
+                    <div>
+                      <span class="form-label">Position</span>
+                      <span class="form-val" id="player-view-pos">GK</span>
+                    </div>
+                    <div>
+                      <span class="form-label">Rating</span>
+                      <span class="form-val text-green" id="player-view-rating">10.0</span>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <span class="form-label">Stamina</span>
+                    <div class="progress-bar-glow">
+                      <div class="progress-bar-fill-glow stamina" id="player-view-stamina-bar" style="width: 100%"></div>
+                    </div>
+                    <span class="form-val-mini" id="player-view-stamina-val">100%</span>
+                  </div>
+                  <div class="form-group">
+                    <span class="form-label">Health Status</span>
+                    <span class="status-badge healthy" id="player-view-status">Healthy</span>
+                  </div>
+                  <div class="booster-shortcut mt-3">
+                    <button class="btn btn-secondary w-full" id="btn-use-drink-player">
+                      Feed Recovery Drink
+                    </button>
+                    <button class="btn btn-secondary w-full mt-2" id="btn-use-medkit-player">
+                      Apply Medical Kit
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <h2 class="section-title mt-4">Squad List</h2>
+              <div class="player-list-scroll glass-panel">
+                <table class="squad-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Pos</th>
+                      <th>Rating</th>
+                      <th>Stamina</th>
+                    </tr>
+                  </thead>
+                  <tbody id="squad-list-tbody">
+                    <!-- Javascript populated -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SHOP TAB -->
+        <div class="tab-panel" id="panel-shop">
+          <div class="panel-header">
+            <div>
+              <h1 class="panel-title">Finances & Upgrades</h1>
+              <p class="panel-subtitle">Use money from sponsors ($500 every 10 turns) and match wins (+$1000) to upgrade your training or buy boosters.</p>
+            </div>
+          </div>
+
+          <div class="shop-grid">
+            <!-- Upgrades Facility -->
+            <div class="shop-section glass-panel">
+              <h2 class="shop-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shop-title-icon">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <path d="M22 4L12 14.01l-3-3" />
+                </svg>
+                Facility Upgrades
+              </h2>
+              <p class="shop-desc">Permanently increase the base stat points gained per training turn.</p>
+              
+              <div class="upgrades-list">
+                <!-- Speed facility -->
+                <div class="shop-item" id="item-facility-speed">
+                  <div class="shop-item-info">
+                    <div class="item-name">Speed Agility Track <span class="badge" id="lvl-lbl-speed">Lvl 1</span></div>
+                    <div class="item-benefit">Next: Speed gains +25%</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyFacility('speed')">Upgrade - $200</button>
+                </div>
+
+                <!-- Stamina facility -->
+                <div class="shop-item" id="item-facility-stamina">
+                  <div class="shop-item-info">
+                    <div class="item-name">Endurance Hill <span class="badge" id="lvl-lbl-stamina">Lvl 1</span></div>
+                    <div class="item-benefit">Next: Stamina gains +25%</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyFacility('stamina')">Upgrade - $200</button>
+                </div>
+
+                <!-- Power facility -->
+                <div class="shop-item" id="item-facility-power">
+                  <div class="shop-item-info">
+                    <div class="item-name">Gym Weights Facility <span class="badge" id="lvl-lbl-power">Lvl 1</span></div>
+                    <div class="item-benefit">Next: Power gains +25%</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyFacility('power')">Upgrade - $200</button>
+                </div>
+
+                <!-- Unity facility -->
+                <div class="shop-item" id="item-facility-unity">
+                  <div class="shop-item-info">
+                    <div class="item-name">Tactical Pitch <span class="badge" id="lvl-lbl-unity">Lvl 1</span></div>
+                    <div class="item-benefit">Next: Unity gains +25%</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyFacility('unity')">Upgrade - $200</button>
+                </div>
+
+                <!-- Tactic facility -->
+                <div class="shop-item" id="item-facility-tactic">
+                  <div class="shop-item-info">
+                    <div class="item-name">Video Analytics Room <span class="badge" id="lvl-lbl-tactic">Lvl 1</span></div>
+                    <div class="item-benefit">Next: Tactics gains +25%</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyFacility('tactic')">Upgrade - $200</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boosters Shop -->
+            <div class="shop-section glass-panel">
+              <h2 class="shop-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shop-title-icon">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                Boosters & Supplies
+              </h2>
+              <p class="shop-desc">Consumable items that instantly recover fatigue or permanently boost stats.</p>
+
+              <div class="upgrades-list">
+                <!-- Fatigue Recovery Drink -->
+                <div class="shop-item" id="item-booster-drink">
+                  <div class="shop-item-info">
+                    <div class="item-name">Energy Recovery Drink</div>
+                    <div class="item-benefit">Removes 30 fatigue immediately. (Doesn't skip turn)</div>
+                    <div class="item-stock">Owned: <span id="owned-drink">0</span></div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyBooster('drink')">Buy - $100</button>
+                </div>
+
+                <!-- Medical Kit -->
+                <div class="shop-item" id="item-booster-medkit">
+                  <div class="shop-item-info">
+                    <div class="item-name">Medical Physio Kit</div>
+                    <div class="item-benefit">Instantly heals an injured player back to full health.</div>
+                    <div class="item-stock">Owned: <span id="owned-medkit">0</span></div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyBooster('medkit')">Buy - $250</button>
+                </div>
+
+                <!-- Permanent Boosters -->
+                <div class="shop-item" id="item-booster-speed">
+                  <div class="shop-item-info">
+                    <div class="item-name">Pro Insoles</div>
+                    <div class="item-benefit">Adds +5 Speed to team permanently.</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyStatBooster('speed')">Buy - $150</button>
+                </div>
+
+                <div class="shop-item" id="item-booster-stamina">
+                  <div class="shop-item-info">
+                    <div class="item-name">Oxygen Optimizer</div>
+                    <div class="item-benefit">Adds +5 Stamina to team permanently.</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyStatBooster('stamina')">Buy - $150</button>
+                </div>
+
+                <div class="shop-item" id="item-booster-power">
+                  <div class="shop-item-info">
+                    <div class="item-name">Creatine Booster Pack</div>
+                    <div class="item-benefit">Adds +5 Power to team permanently.</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyStatBooster('power')">Buy - $150</button>
+                </div>
+
+                <div class="shop-item" id="item-booster-unity">
+                  <div class="shop-item-info">
+                    <div class="item-name">Team Retreat Kit</div>
+                    <div class="item-benefit">Adds +5 Unity to team permanently.</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyStatBooster('unity')">Buy - $200</button>
+                </div>
+
+                <div class="shop-item" id="item-booster-tactic">
+                  <div class="shop-item-info">
+                    <div class="item-name">Tactical Chalkboard Set</div>
+                    <div class="item-benefit">Adds +5 Tactics to team permanently.</div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" onclick="buyStatBooster('tactic')">Buy - $150</button>
+                </div>
+
+                <!-- Sponsored Booster (Populated dynamically) -->
+                <div class="shop-item hidden" id="item-booster-sponsored">
+                  <div class="shop-item-info">
+                    <div class="item-name" id="sponsored-item-name">Sponsor Item</div>
+                    <div class="item-benefit" id="sponsored-item-benefit">Sponsor benefits</div>
+                    <div class="item-stock">Owned: <span id="owned-sponsored">0</span></div>
+                  </div>
+                  <button class="btn btn-primary buy-btn" id="btn-buy-sponsored" onclick="buySponsoredItem()">Buy - $100</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MATCH CENTRE TAB -->
+        <div class="tab-panel" id="panel-match-centre">
+          <div class="panel-header">
+            <div>
+              <h1 class="panel-title">Match Centre</h1>
+              <p class="panel-subtitle">Prepare for upcoming tournament matches. View the scout report 3 turns before kickoff.</p>
+            </div>
+          </div>
+
+          <div class="match-centre-layout">
+            <!-- Next Match Card -->
+            <div class="match-info-card glass-panel text-center">
+              <div class="match-status-tag" id="match-countdown-badge">Next Match in 10 Turns</div>
+              
+              <div class="versus-display">
+                <div class="team-side">
+                  <div class="team-avatar home-color">A</div>
+                  <div class="team-name">Apex Academy</div>
+                </div>
+                <div class="vs-divider">VS</div>
+                <div class="team-side">
+                  <div class="team-avatar away-color" id="opp-avatar">?</div>
+                  <div class="team-name" id="opp-name">Opponent</div>
+                </div>
+              </div>
+
+              <div class="scouting-notice" id="scout-locked-notice">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="scout-icon">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <p>Scouting Report Locked. Will unlock 3 turns before the match (Turns 7, 17, 27).</p>
+              </div>
+
+              <div class="enter-match-section mt-4">
+                <button class="btn btn-primary btn-large w-full" id="btn-enter-match" disabled onclick="enterMatchScreen()">
+                  Match Ready: Enter Match Day
+                </button>
+              </div>
+            </div>
+
+            <!-- Scouting Report -->
+            <div class="scout-report-card glass-panel hidden" id="scout-report-card">
+              <h2 class="scout-title">Scouting Analyst Report</h2>
+              <p class="scout-subtitle">Comparison of core team stats vs the opponent. Utilize this to select your match tactics.</p>
+              
+              <div class="scout-stats-list" id="scout-stats-list">
+                <!-- Javascript populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- MATCH ENGINE FULL SCREEN OVERLAY -->
+  <div class="match-overlay-container hidden" id="match-overlay">
+    <div class="match-screen">
+      <!-- Match Header Scoreboard -->
+      <div class="match-scoreboard">
+        <div class="scoreboard-team home">
+          <span class="match-team-name">Apex Academy</span>
+          <div class="stamina-badge">STAM: <span id="match-home-stamina">100%</span></div>
+        </div>
+        <div class="scoreboard-score" id="scoreboard-score">0 - 0</div>
+        <div class="scoreboard-team away">
+          <span class="match-team-name" id="match-opp-name">Opponent FC</span>
+          <div class="stamina-badge">STAM: <span id="match-opp-stamina">100%</span></div>
+        </div>
+        <div class="scoreboard-time" id="scoreboard-time">00:00</div>
+      </div>
+
+      <!-- Match Visual & Commentary Split Screen -->
+      <div class="match-arena">
+        <!-- Visual Pitch (Left side) -->
+        <div class="match-pitch-container glass-panel">
+          <div class="match-pitch" id="match-pitch-canvas-container">
+            <!-- 2D Canvas or visual elements representing player dots & ball -->
+            <div class="match-pitch-lines">
+              <div class="midfield-circle"></div>
+              <div class="midfield-line"></div>
+              <div class="penalty-box home"></div>
+              <div class="penalty-box away"></div>
+            </div>
+            <!-- Interactive Elements -->
+            <div class="pitch-ball" id="pitch-ball" style="top: 50%; left: 50%"></div>
+            
+            <!-- Home Lineup Groups -->
+            <div id="home-match-players">
+              <div class="pitch-player home GK" id="player-h-gk">GK</div>
+              <div class="pitch-player home DF" id="player-h-df1">DF</div>
+              <div class="pitch-player home DF" id="player-h-df2">DF</div>
+              <div class="pitch-player home MF" id="player-h-mf1">MF</div>
+              <div class="pitch-player home MF" id="player-h-mf2">MF</div>
+              <div class="pitch-player home FW" id="player-h-fw">FW</div>
+            </div>
+
+            <!-- Away Lineup Groups -->
+            <div id="away-match-players">
+              <div class="pitch-player away GK" id="player-a-gk">GK</div>
+              <div class="pitch-player away DF" id="player-a-df1">DF</div>
+              <div class="pitch-player away DF" id="player-a-df2">DF</div>
+              <div class="pitch-player away MF" id="player-a-mf1">MF</div>
+              <div class="pitch-player away MF" id="player-a-mf2">MF</div>
+              <div class="pitch-player away FW" id="player-a-fw">FW</div>
+            </div>
+
+            <!-- Action Tag Popups -->
+            <div class="action-popup hidden" id="action-popup">PASS!</div>
+          </div>
+        </div>
+
+        <!-- Commentary Panel (Right side) -->
+        <div class="match-commentary glass-panel">
+          <div class="commentary-header">Live Text Commentary</div>
+          <div class="commentary-scroll" id="commentary-log">
+            <div class="comment-line system-msg">Kickoff is imminent. Choose your tactic...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tactic Panel Overlay (Shown at Pre-half and Half-time) -->
+      <div class="tactic-selection-panel" id="tactic-selection-panel">
+        <h2 class="tactic-panel-title">Choose Play Style for the <span id="half-label">First Half</span></h2>
+        <div class="tactic-options">
+          <label class="tactic-card-opt">
+            <input type="radio" name="tactic-choice" value="attack" checked>
+            <div class="tactic-opt-card-content">
+              <span class="tactic-opt-title">Attack</span>
+              <p class="tactic-opt-desc">Maximize forwards' ratings by 20%. Defense ratings reduced by 10%. Stamina usage +15%.</p>
+            </div>
+          </label>
+          <label class="tactic-card-opt">
+            <input type="radio" name="tactic-choice" value="defense">
+            <div class="tactic-opt-card-content">
+              <span class="tactic-opt-title">Defense</span>
+              <p class="tactic-opt-desc">Boost defense and goalkeeper ratings by 20%. Forward rating reduced by 10%. Stamina usage -10%.</p>
+            </div>
+          </label>
+          <label class="tactic-card-opt">
+            <input type="radio" name="tactic-choice" value="counter">
+            <div class="tactic-opt-card-content">
+              <span class="tactic-opt-title">Counter-Attack</span>
+              <p class="tactic-opt-desc">Boost midfielders' ratings by 15%, plus Speed-based positions get +15% benefit. Balanced stamina.</p>
+            </div>
+          </label>
+        </div>
+        <div class="tactic-confirm-btn-wrap">
+          <button class="btn btn-primary btn-large" id="btn-start-half" onclick="startHalf()">Start Half</button>
+        </div>
+      </div>
+
+      <!-- Goal Scorer popup (Slide-in) -->
+      <div class="goal-scorer-popup hidden" id="goal-scorer-popup">
+        <div class="scorer-icon-glow">⚽</div>
+        <div class="scorer-info-wrap">
+          <span class="scorer-label">GOAL SCORER</span>
+          <span class="scorer-name" id="scorer-name">Muller</span>
+          <span class="scorer-position" id="scorer-pos">Front</span>
+        </div>
+      </div>
+
+      <!-- Match Summary Panel Overlay (Shown at full time) -->
+      <div class="match-summary-overlay-panel hidden" id="match-summary-panel">
+        <h2 class="summary-panel-title">Match Statistics</h2>
+        <div class="summary-score-line">
+          <span class="team-name home">Apex Academy</span>
+          <span class="summary-score-nums" id="summary-score-nums">0 - 0</span>
+          <span class="team-name away" id="summary-opp-name">Opponent FC</span>
+        </div>
+        
+        <div class="stats-table-wrapper">
+          <div class="stat-row-summary">
+            <span class="stat-val home" id="sum-home-poss">50%</span>
+            <span class="stat-label-summary">Possession</span>
+            <span class="stat-val away" id="sum-away-poss">50%</span>
+          </div>
+          <div class="stat-row-summary">
+            <span class="stat-val home" id="sum-home-shots">0 (0)</span>
+            <span class="stat-label-summary">Shots (On Target)</span>
+            <span class="stat-val away" id="sum-away-shots">0 (0)</span>
+          </div>
+          <div class="stat-row-summary">
+            <span class="stat-val home" id="sum-home-corners">0</span>
+            <span class="stat-label-summary">Corners</span>
+            <span class="stat-val away" id="sum-away-corners">0</span>
+          </div>
+          <div class="stat-row-summary">
+            <span class="stat-val home" id="sum-home-fouls">0</span>
+            <span class="stat-label-summary">Fouls Committed</span>
+            <span class="stat-val away" id="sum-away-fouls">0</span>
+          </div>
+        </div>
+
+        <div class="summary-earnings-card">
+          <h3 class="earnings-title">Sponsor Payout Breakdown</h3>
+          <div class="earning-line"><span>Match Win Bonus:</span><span class="text-green">+$1000</span></div>
+          <div class="earning-line"><span>Goals Scored Bonus (<span id="summary-goals-count">0</span> x $200):</span><span class="text-green" id="summary-goals-bonus">+$0</span></div>
+          <div class="earning-line border-top"><span>Total Cash Gained:</span><span class="text-green font-bold" id="summary-total-payout">$1000</span></div>
+        </div>
+
+        <div class="summary-confirm-btn-wrap">
+          <button class="btn btn-primary btn-large" onclick="closeMatchSummary()">Continue to Academy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPONSOR PAYOUT MODAL -->
+  <div class="modal-backdrop hidden" id="modal-sponsor">
+    <div class="game-modal glass-panel text-center">
+      <div class="modal-icon text-green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-16 h-16">
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      </div>
+      <h2 class="modal-title text-green">Sponsor Funding Received!</h2>
+      <p class="modal-text">With the match approaching in 5 turns, your sponsors have deposited cash to help you prepare the team.</p>
+      <div class="modal-cash-received">+$500</div>
+      <button class="btn btn-primary btn-large mt-4" onclick="closeSponsorModal()">Acknowledge</button>
+    </div>
+  </div>
+
+  <!-- PENALTY SHOOTOUT MODAL -->
+  <div class="modal-backdrop hidden" id="modal-penalty">
+    <div class="game-modal penalty-modal glass-panel">
+      <h2 class="modal-title text-center">Penalty Shootout</h2>
+      <p class="text-center">The match ended in a draw! We go to penalties to decide who advances.</p>
+      
+      <div class="shootout-scoreboard">
+        <div class="shootout-score-side">
+          <span class="shootout-team">Apex</span>
+          <div class="shootout-dots" id="home-penalty-dots">
+            <!-- 5 dots -->
+          </div>
+        </div>
+        <div class="shootout-numerical-score" id="shootout-score-nums">0 - 0</div>
+        <div class="shootout-score-side">
+          <span class="shootout-team" id="opp-penalty-team">Opponent</span>
+          <div class="shootout-dots" id="away-penalty-dots">
+            <!-- 5 dots -->
+          </div>
+        </div>
+      </div>
+
+      <div class="shootout-pitch-view">
+        <div class="penalty-goal">
+          <div class="goal-posts">
+            <!-- GK Position and Target Area representation -->
+            <div class="keeper-indicator" id="penalty-keeper">GK</div>
+            <div class="ball-indicator hidden" id="penalty-ball"></div>
+          </div>
+        </div>
+        <div class="shootout-target-selectors" id="penalty-actions">
+          <p class="text-center font-semibold mb-2">Choose where to kick / dive:</p>
+          <div class="grid-3">
+            <button class="btn btn-secondary penalty-opt" data-dir="left">Top Left</button>
+            <button class="btn btn-secondary penalty-opt" data-dir="center">Center</button>
+            <button class="btn btn-secondary penalty-opt" data-dir="right">Top Right</button>
+            <button class="btn btn-secondary penalty-opt" data-dir="bottom-left">Bottom Left</button>
+            <button class="btn btn-secondary" style="visibility:hidden"></button>
+            <button class="btn btn-secondary penalty-opt" data-dir="bottom-right">Bottom Right</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shootout-commentary text-center font-mono mt-4" id="shootout-commentary">
+        Ready for the shootout...
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER / SACKED MODAL -->
+  <div class="modal-backdrop hidden" id="modal-gameover">
+    <div class="game-modal glass-panel text-center">
+      <div class="modal-icon text-red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-16 h-16">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <h2 class="modal-title text-red">YOU WERE SACKED!</h2>
+      <p class="modal-text">Losing is not tolerated by the board. Your tenure as manager has come to a grinding halt.</p>
+      
+      <div class="final-stats-summary" id="gameover-summary">
+        <!-- Javascript populated -->
+      </div>
+
+      <button class="btn btn-primary btn-large mt-4" onclick="restartGame()">Try Again</button>
+    </div>
+  </div>
+
+  <!-- VICTORY / CHAMPIONS MODAL -->
+  <div class="modal-backdrop hidden" id="modal-victory">
+    <div class="game-modal glass-panel text-center">
+      <div class="modal-icon text-yellow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-16 h-16">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+          <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
+          <path d="M12 2a6 6 0 0 0-6 6v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V8a6 6 0 0 0-6-6z" />
+        </svg>
+      </div>
+      <h2 class="modal-title text-yellow">ACADEMY CHAMPIONS!</h2>
+      <p class="modal-text">Incredible achievement! You have successfully managed your academy through all 3 challenging matches and brought home the cup!</p>
+      
+      <div class="final-stats-summary" id="victory-summary">
+        <!-- Javascript populated -->
+      </div>
+
+      <button class="btn btn-primary btn-large mt-4" onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <!-- SPONSOR SELECTION MODAL -->
+  <div class="modal-backdrop hidden" id="modal-choose-sponsor">
+    <div class="game-modal sponsor-selection-modal glass-panel">
+      <h2 class="modal-title text-center text-green">Select Academy Sponsor</h2>
+      <p class="modal-text text-center">Your recent performance has attracted sponsor interest! Select a corporate sponsor to receive cash boosts, training buffs, and unique shop items.</p>
+      
+      <div class="sponsor-options-grid">
+        <!-- Volt -->
+        <div class="sponsor-card" onclick="selectSponsor('volt')">
+          <div class="sponsor-logo volt">VOLT</div>
+          <h3 class="sponsor-card-title">Volt Energy Co.</h3>
+          <ul class="sponsor-card-perks">
+            <li class="perk-up">+ $350 Sponsor Payouts</li>
+            <li class="perk-up">+100% Speed Training gains</li>
+            <li class="perk-up">Unlock: Volt Supercharge Drink ($120)</li>
+            <li class="perk-down">Creatine Booster gives only +2 Power</li>
+            <li class="perk-down">Insoles & Chalkboards cost +$100</li>
+            <li class="perk-down">Energy Drinks cost +30% extra</li>
+          </ul>
+        </div>
+        <!-- Aegis -->
+        <div class="sponsor-card" onclick="selectSponsor('aegis')">
+          <div class="sponsor-logo aegis">AEGIS</div>
+          <h3 class="sponsor-card-title">Aegis Protection</h3>
+          <ul class="sponsor-card-perks">
+            <li class="perk-up">+ $300 Sponsor Payouts</li>
+            <li class="perk-up">+100% Tactics Training gains</li>
+            <li class="perk-up">-75% Match Injury rate</li>
+            <li class="perk-up">Unlock: Nano Physio Tape ($100)</li>
+            <li class="perk-down">Energy Drinks are 60% weaker</li>
+            <li class="perk-down">Insoles, Creatine & Retreats cost more</li>
+          </ul>
+        </div>
+        <!-- Unity -->
+        <div class="sponsor-card" onclick="selectSponsor('unity')">
+          <div class="sponsor-logo unity">UNITY</div>
+          <h3 class="sponsor-card-title">Unity Insurance</h3>
+          <ul class="sponsor-card-perks">
+            <li class="perk-up">+ $450 Sponsor Payouts</li>
+            <li class="perk-up">+100% Unity Training gains</li>
+            <li class="perk-up">Resting recovers +30 extra fatigue</li>
+            <li class="perk-up">Unlock: Cohesion Retreat Kit ($150)</li>
+            <li class="perk-down">Energy Drinks cost +$100 extra</li>
+            <li class="perk-down">Oxygen booster is weaker & costs more</li>
+            <li class="perk-down">Tactics & Physio Kits cost more</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KICKER SELECTION MODAL -->
+  <div class="modal-backdrop hidden" id="modal-choose-kicker">
+    <div class="game-modal kicker-selection-modal glass-panel">
+      <h2 class="modal-title text-center" id="kicker-modal-title">Select Set-Piece Kicker</h2>
+      <p class="modal-text text-center" id="kicker-modal-desc">Choose a player to execute the set-piece. Kicker stats will directly determine success.</p>
+      
+      <div class="kicker-list-scroll">
+        <table class="kicker-table">
+          <thead>
+            <tr>
+              <th>Player Name</th>
+              <th>Pos</th>
+              <th id="kicker-stat-header">Kicker Stat</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="kicker-list-tbody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
